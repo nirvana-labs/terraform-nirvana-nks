@@ -1,0 +1,25 @@
+formatter: markdown table
+
+content: |-
+  # node-pool
+
+  Standalone submodule for adding a worker node pool to an existing NKS cluster. Useful when the cluster is managed in a separate Terraform configuration (e.g. platform team manages the cluster, app teams manage their own pools).
+
+  ## Usage
+
+  ```hcl
+  module "gpu_pool" {
+    source = "nirvana-labs/nks/nirvana//modules/node-pool"
+
+    cluster_id    = "cluster-id"
+    name          = "gpu"
+    node_count    = 2
+    instance_type = "n1-standard-16"
+  }
+  ```
+
+  {{ .Requirements }}
+  {{ .Providers }}
+  {{ .Resources }}
+  {{ .Inputs }}
+  {{ .Outputs }}
