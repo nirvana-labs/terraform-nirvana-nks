@@ -41,7 +41,7 @@ output "subnet_cidr" {
 }
 
 output "ingress_vip" {
-  description = "Private IP of the shared Cilium ingress (second-to-last IP in the subnet)."
+  description = "Private IP of the shared ingress (second-to-last IP in the subnet)."
   value       = local.ingress_vip
 }
 

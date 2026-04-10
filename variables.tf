@@ -67,13 +67,13 @@ variable "management_cidrs" {
 }
 
 variable "ingress_cidrs" {
-  description = "CIDRs allowed to access the shared Cilium ingress (HTTP 80, HTTPS 443)."
+  description = "CIDRs allowed to access the shared ingress (HTTP 80, HTTPS 443)."
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
 
 variable "create_firewall_rules" {
-  description = "Whether to create the default RKE2/Cilium intra-cluster and access firewall rules."
+  description = "Whether to create the default access firewall rules."
   type        = bool
   default     = true
 }

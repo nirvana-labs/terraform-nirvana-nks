@@ -11,7 +11,7 @@ NKS clusters are created via the Nirvana Cloud provisioning service API. The con
 - `main.tf` — VPC (conditional), NKS cluster, worker node pools
 - `variables.tf` — Public variable API
 - `outputs.tf` — Cluster IPs, VPC, ingress VIP, node pool IDs
-- `firewall.tf` — Default RKE2/Cilium intra-cluster + access firewall rules
+- `firewall.tf` — Default access firewall rules
 - `versions.tf` — Provider version constraints (nirvana-labs/nirvana >= 1.32)
 - `modules/node-pool/` — Standalone submodule for adding pools to an existing cluster independently
 - `examples/basic/` — Minimal cluster with a single worker pool
@@ -31,25 +31,22 @@ Uses the [nirvana-labs/nirvana](https://registry.terraform.io/providers/nirvana-
 
 - **One cluster per VPC** — the platform does not support multiple NKS clusters in a single VPC
 - **Control plane is platform-managed** — no control plane node pool variables; customers only configure worker pools via `node_pools`
-- **Firewall rules are module-managed** — the provisioning service does NOT create firewall rules. The module creates default rules for K8s API (6443), HTTP/HTTPS ingress (80/443), and RKE2/Cilium intra-cluster traffic. Toggle with `create_firewall_rules = false`
-- **VIP allocation** — K8s API VIP is the last usable IP in the subnet; shared Cilium ingress VIP is the second-to-last. Both are computed from `subnet_cidr` in `firewall.tf` locals
+- **Firewall rules are module-managed** — the provisioning service does NOT create firewall rules. The module creates default rules for K8s API (6443) and HTTP/HTTPS ingress (80/443). Intra-cluster traffic is allowed by the platform by default. Toggle with `create_firewall_rules = false`
+- **VIP allocation** — K8s API VIP is the last usable IP in the subnet; shared ingress VIP is the second-to-last. Both are computed from `subnet_cidr` in `firewall.tf` locals
 - **Existing VPC support** — set `create_vpc = false` and pass `vpc_id`. Uses a `create_vpc` bool (not null-checking `vpc_id`) so that `count` is always known at plan time, avoiding issues when `vpc_id` comes from a resource output. The module looks up the VPC via a data source to discover `subnet_cidr`
 
 ## Networking
 
 - K8s API is exposed on the last usable IP in the VPC subnet (the cluster's `private_ip` / VIP)
-- Shared Cilium ingress is exposed on the second-to-last IP
+- Shared ingress is exposed on the second-to-last IP
 - Firewall rules for management access target the API VIP specifically (`/32`), not the whole subnet
 - Firewall rules for ingress target the ingress VIP specifically (`/32`)
-- RKE2 intra-cluster rules use the full subnet CIDR as both source and destination
 
 ## Firewall ports
 
 - **Management (per CIDR):** TCP 6443 (K8s API)
-- **Ingress (per CIDR):** TCP 80, 443 (HTTP/HTTPS via shared Cilium ingress)
-- **RKE2 intra-cluster TCP:** 2379-2381 (etcd), 4240 (Cilium health), 4244 (Cilium metrics), 6443 (K8s API), 9345 (RKE2 supervisor), 10250 (kubelet), 30000-32767 (NodePorts)
-- **RKE2 intra-cluster UDP:** 8472 (Cilium VXLAN), 51871 (Cilium WireGuard)
-- Reference: https://docs.rke2.io/install/requirements?cni-rules=Cilium#inbound-network-rules
+- **Ingress (per CIDR):** TCP 80, 443 (HTTP/HTTPS via shared ingress)
+- Intra-cluster traffic is allowed by the platform by default — no firewall rules needed
 
 ## Validation
 

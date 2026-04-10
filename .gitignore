@@ -4,3 +4,4 @@
 *.tfplan
 .terraform.lock.hcl
 .env
+examples/existing-vpc/.terraform.tfstate.lock.info

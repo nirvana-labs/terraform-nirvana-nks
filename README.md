@@ -33,7 +33,7 @@ module "nks" {
 }
 ```
 
-The module creates a managed NKS cluster with a VPC, worker node pools, and firewall rules for Kubernetes API access, HTTP/HTTPS ingress, and RKE2/Cilium intra-cluster communication. The control plane is fully managed by the NKS platform.
+The module creates a managed NKS cluster with a VPC, worker node pools, and firewall rules for Kubernetes API access and HTTP/HTTPS ingress. The control plane is fully managed by the NKS platform.
 
 > **Note:** After `terraform apply` completes, the control plane needs ~5 minutes before it is reachable and the kubeconfig can be fetched. Worker nodes are typically ready ~8 minutes after apply.
 
@@ -116,12 +116,8 @@ The module creates default firewall rules for:
 |------|----------|-------|--------|
 | K8s API | TCP | 6443 | `management_cidrs` |
 | HTTP/HTTPS ingress | TCP | 80, 443 | `ingress_cidrs` |
-| RKE2 intra-cluster | TCP | 2379-2381, 4240, 4244, 6443, 9345, 10250, 30000-32767 | VPC subnet |
-| Cilium overlay | UDP | 8472, 51871 | VPC subnet |
 
-Management and ingress rules target the K8s API VIP and Cilium ingress VIP respectively (not the whole subnet). Set `create_firewall_rules = false` to manage firewall rules externally.
-
-See the [RKE2 network requirements](https://docs.rke2.io/install/requirements?cni-rules=Cilium#inbound-network-rules) for details on intra-cluster ports.
+Management and ingress rules target the K8s API VIP and ingress VIP respectively (not the whole subnet). Intra-cluster traffic is allowed by the platform by default. Set `create_firewall_rules = false` to manage firewall rules externally.
 
 ## Examples
 
