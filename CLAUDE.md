@@ -12,7 +12,7 @@ NKS clusters are created via the Nirvana Cloud provisioning service API. The con
 - `variables.tf` — Public variable API
 - `outputs.tf` — Cluster IPs, VPC, ingress VIP, node pool IDs
 - `firewall.tf` — Default access firewall rules
-- `versions.tf` — Provider version constraints (nirvana-labs/nirvana >= 1.32)
+- `versions.tf` — Provider version constraints (nirvana-labs/nirvana >= 1.41)
 - `modules/node-pool/` — Standalone submodule for adding pools to an existing cluster independently
 - `examples/basic/` — Minimal cluster with a single worker pool
 - `examples/multi-pool/` — Multiple heterogeneous worker pools
@@ -34,6 +34,7 @@ Uses the [nirvana-labs/nirvana](https://registry.terraform.io/providers/nirvana-
 - **Firewall rules are module-managed** — the provisioning service does NOT create firewall rules. The module creates default rules for K8s API (6443) and HTTP/HTTPS ingress (80/443). Intra-cluster traffic is allowed by the platform by default. Toggle with `create_firewall_rules = false`
 - **VIP allocation** — K8s API VIP is the last usable IP in the subnet; shared ingress VIP is the second-to-last. Both are computed from `subnet_cidr` in `firewall.tf` locals
 - **Existing VPC support** — set `create_vpc = false` and pass `vpc_id`. Uses a `create_vpc` bool (not null-checking `vpc_id`) so that `count` is always known at plan time, avoiding issues when `vpc_id` comes from a resource output. The module looks up the VPC via a data source to discover `subnet_cidr`
+- **Kubeconfig fetch is two-step** — `fetch_kubeconfig` defaults to `false`. The control plane needs ~5 minutes to become reachable after cluster creation, so the first apply creates the cluster and the second (with `fetch_kubeconfig = true`) fetches the kubeconfig
 
 ## Networking
 

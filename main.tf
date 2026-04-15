@@ -44,3 +44,17 @@ resource "nirvana_nks_node_pool" "workers" {
 
   tags = concat(var.tags, each.value.tags)
 }
+
+data "nirvana_nks_cluster_kubeconfig" "this" {
+  count = var.fetch_kubeconfig ? 1 : 0
+
+  cluster_id = nirvana_nks_cluster.this.id
+}
+
+resource "local_sensitive_file" "kubeconfig" {
+  count = var.fetch_kubeconfig ? 1 : 0
+
+  content         = data.nirvana_nks_cluster_kubeconfig.this[0].kubeconfig
+  filename        = coalesce(var.kubeconfig_path, "${path.root}/.secrets/kubeconfig-${var.cluster_name}")
+  file_permission = "0600"
+}

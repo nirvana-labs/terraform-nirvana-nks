@@ -78,6 +78,18 @@ variable "create_firewall_rules" {
   default     = true
 }
 
+variable "fetch_kubeconfig" {
+  description = "Whether to fetch the cluster kubeconfig and write it to kubeconfig_path. Set to true only after the cluster is ready (~5 minutes after initial apply); fetching before the control plane is reachable will fail."
+  type        = bool
+  default     = false
+}
+
+variable "kubeconfig_path" {
+  description = "Path to write the kubeconfig file when fetch_kubeconfig is true. Defaults to .secrets/kubeconfig-<cluster_name> relative to the root module."
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "Tags to attach to all resources."
   type        = list(string)
