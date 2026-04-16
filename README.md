@@ -16,8 +16,7 @@ set -a; source .env; set +a
 
 ```hcl
 module "nks" {
-  source  = "nirvana-labs/nks/nirvana"
-  version = "~> 1.0"
+  source = "git::https://github.com/nirvana-labs/terraform-nirvana-nks.git?ref=main"
 
   cluster_name = "basic-demo"
   project_id   = var.project_id
@@ -67,8 +66,7 @@ By default the module creates a new VPC. To use an existing VPC, set `create_vpc
 
 ```hcl
 module "nks" {
-  source  = "nirvana-labs/nks/nirvana"
-  version = "~> 1.0"
+  source = "git::https://github.com/nirvana-labs/terraform-nirvana-nks.git?ref=main"
 
   cluster_name = "existing-vpc-demo"
   project_id   = var.project_id
@@ -92,8 +90,7 @@ Define heterogeneous worker pools by adding entries to the `node_pools` map:
 
 ```hcl
 module "nks" {
-  source  = "nirvana-labs/nks/nirvana"
-  version = "~> 1.0"
+  source = "git::https://github.com/nirvana-labs/terraform-nirvana-nks.git?ref=main"
 
   cluster_name = "multi-pool-demo"
   project_id   = var.project_id
@@ -123,7 +120,7 @@ Use the `node-pool` submodule to manage pools in a separate Terraform configurat
 
 ```hcl
 module "gpu_pool" {
-  source = "nirvana-labs/nks/nirvana//modules/node-pool"
+  source = "git::https://github.com/nirvana-labs/terraform-nirvana-nks.git//modules/node-pool?ref=main"
 
   cluster_id    = module.nks.cluster_id
   name          = "gpu"
