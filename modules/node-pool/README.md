@@ -21,12 +21,12 @@ module "gpu_pool" {
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
-| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.32 |
+| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.41 |
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | >= 1.32 |
+| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | >= 1.41 |
 ## Resources
 
 | Name | Type |

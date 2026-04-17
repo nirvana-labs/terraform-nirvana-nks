@@ -11,4 +11,6 @@ module "nks" {
       instance_type = "n1-standard-8"
     }
   }
+
+  # fetch_kubeconfig = true   # uncomment after the first apply (~5 min wait)
 }

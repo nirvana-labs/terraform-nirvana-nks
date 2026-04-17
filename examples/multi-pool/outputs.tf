@@ -14,8 +14,6 @@ output "node_pool_ids" {
   value = module.nks.node_pool_ids
 }
 
-# TODO: Uncomment after adding kubeconfig to the provider.
-# output "kubeconfig" {
-#   value     = module.nks.kubeconfig
-#   sensitive = true
-# }
+output "kubeconfig_path" {
+  value = module.nks.kubeconfig_path
+}

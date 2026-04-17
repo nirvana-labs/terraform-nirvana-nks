@@ -10,8 +10,6 @@ output "vpc_id" {
   value = module.nks.vpc_id
 }
 
-# TODO: Uncomment after adding kubeconfig to the provider.
-# output "kubeconfig" {
-#   value     = module.nks.kubeconfig
-#   sensitive = true
-# }
+output "kubeconfig_path" {
+  value = module.nks.kubeconfig_path
+}

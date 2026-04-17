@@ -23,12 +23,16 @@ output "cluster_status" {
   value       = nirvana_nks_cluster.this.status
 }
 
-# TODO: Uncomment after adding kubeconfig to the nirvana_nks_cluster resource in the provider.
-# output "kubeconfig" {
-#   description = "Kubeconfig for the cluster."
-#   value       = nirvana_nks_cluster.this.kubeconfig
-#   sensitive   = true
-# }
+output "kubeconfig" {
+  description = "Kubeconfig for the cluster. Null unless fetch_kubeconfig is true."
+  value       = var.fetch_kubeconfig ? data.nirvana_nks_cluster_kubeconfig.this[0].kubeconfig : null
+  sensitive   = true
+}
+
+output "kubeconfig_path" {
+  description = "Path to the written kubeconfig file. Null unless fetch_kubeconfig is true."
+  value       = var.fetch_kubeconfig ? local_sensitive_file.kubeconfig[0].filename : null
+}
 
 output "vpc_id" {
   description = "ID of the VPC (created or existing)."
@@ -41,7 +45,7 @@ output "subnet_cidr" {
 }
 
 output "ingress_vip" {
-  description = "Private IP of the shared Cilium ingress (second-to-last IP in the subnet)."
+  description = "Private IP of the shared ingress (second-to-last IP in the subnet)."
   value       = local.ingress_vip
 }
 
