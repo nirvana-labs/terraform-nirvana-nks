@@ -31,6 +31,8 @@ module "nks" {
 }
 ```
 
+> **Tip:** The examples above reference `?ref=main`. For production use, pin to a release tag (e.g. `?ref=v1.0.0`) to avoid unexpected changes.
+
 The module creates a managed NKS cluster with a VPC, worker node pools, and firewall rules for Kubernetes API access and HTTP/HTTPS ingress. The control plane is fully managed by the NKS platform.
 
 > **Note:** After `terraform apply` completes, the control plane needs ~5 minutes before it is reachable. Worker nodes are typically ready ~8 minutes after apply.

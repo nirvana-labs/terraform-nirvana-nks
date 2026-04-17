@@ -12,5 +12,5 @@ module "nks" {
     }
   }
 
-  fetch_kubeconfig = true
+  # fetch_kubeconfig = true   # uncomment after the first apply (~5 min wait)
 }
