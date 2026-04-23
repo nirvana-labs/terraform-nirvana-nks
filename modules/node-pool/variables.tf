@@ -49,6 +49,11 @@ variable "labels" {
   description = "Kubernetes labels to apply to each node in the pool. Keys under the kubernetes.io, k8s.io, and nirvanalabs.io prefixes are reserved by the platform."
   type        = map(string)
   default     = {}
+
+  validation {
+    condition     = alltrue([for lk in keys(var.labels) : !can(regex("^(kubernetes\\.io|k8s\\.io|nirvanalabs\\.io)(/|$)", lk))])
+    error_message = "Label keys under the kubernetes.io, k8s.io, and nirvanalabs.io prefixes are reserved by the platform."
+  }
 }
 
 variable "tags" {

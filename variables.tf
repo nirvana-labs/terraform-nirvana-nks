@@ -59,6 +59,11 @@ variable "node_pools" {
     condition     = alltrue([for k, v in var.node_pools : contains(["nvme", "abs"], v.boot_volume_type)])
     error_message = "boot_volume_type must be \"nvme\" or \"abs\"."
   }
+
+  validation {
+    condition     = alltrue([for k, v in var.node_pools : alltrue([for lk in keys(v.labels) : !can(regex("^(kubernetes\\.io|k8s\\.io|nirvanalabs\\.io)(/|$)", lk))])])
+    error_message = "Label keys under the kubernetes.io, k8s.io, and nirvanalabs.io prefixes are reserved by the platform."
+  }
 }
 
 variable "management_cidrs" {
