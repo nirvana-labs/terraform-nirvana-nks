@@ -20,4 +20,9 @@ module "nks" {
       instance_type = "n1-standard-8"
     }
   }
+
+  # Firewall rules default to 0.0.0.0/0 for both the K8s API and ingress VIPs.
+  # Scope management_cidrs to your trusted networks before using this cluster for anything non-trivial.
+  # management_cidrs = ["10.0.0.0/8"]   # e.g. VPN / bastion egress
+  # ingress_cidrs    = ["0.0.0.0/0"]    # public ingress (default)
 }

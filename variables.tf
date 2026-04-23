@@ -41,6 +41,7 @@ variable "node_pools" {
     instance_type    = string
     boot_volume_size = optional(number, 100)
     boot_volume_type = optional(string, "abs")
+    labels           = optional(map(string), {})
     tags             = optional(list(string), [])
   }))
 
@@ -58,10 +59,15 @@ variable "node_pools" {
     condition     = alltrue([for k, v in var.node_pools : contains(["nvme", "abs"], v.boot_volume_type)])
     error_message = "boot_volume_type must be \"nvme\" or \"abs\"."
   }
+
+  validation {
+    condition     = alltrue([for k, v in var.node_pools : alltrue([for lk in keys(v.labels) : !can(regex("^(kubernetes\\.io|k8s\\.io|nirvanalabs\\.io)(/|$)", lk))])])
+    error_message = "Label keys under the kubernetes.io, k8s.io, and nirvanalabs.io prefixes are reserved by the platform."
+  }
 }
 
 variable "management_cidrs" {
-  description = "CIDRs allowed to access the Kubernetes API (6443)."
+  description = "CIDRs allowed to access the Kubernetes API (443)."
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
@@ -79,7 +85,7 @@ variable "create_firewall_rules" {
 }
 
 variable "fetch_kubeconfig" {
-  description = "Whether to fetch the cluster kubeconfig and write it to kubeconfig_path. Set to true only after the cluster is ready (~5 minutes after initial apply); fetching before the control plane is reachable will fail."
+  description = "Whether to fetch the cluster kubeconfig and write it to kubeconfig_path. Set to true only after the cluster is ready (~10 minutes after initial apply); fetching before the control plane is reachable will fail."
   type        = bool
   default     = false
 }
