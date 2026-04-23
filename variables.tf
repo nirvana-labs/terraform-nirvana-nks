@@ -61,7 +61,7 @@ variable "node_pools" {
 }
 
 variable "management_cidrs" {
-  description = "CIDRs allowed to access the Kubernetes API (6443)."
+  description = "CIDRs allowed to access the Kubernetes API (443)."
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
