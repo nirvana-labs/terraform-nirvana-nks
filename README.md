@@ -156,6 +156,7 @@ Management and ingress rules target the K8s API VIP and ingress VIP respectively
 
 - [Basic](https://github.com/nirvana-labs/terraform-nirvana-nks/tree/main/examples/basic) — Minimal cluster with a single worker pool
 - [Multiple pools](https://github.com/nirvana-labs/terraform-nirvana-nks/tree/main/examples/multi-pool) — Heterogeneous worker pools with restricted management CIDRs
+- [Labeled pools](https://github.com/nirvana-labs/terraform-nirvana-nks/tree/main/examples/labeled-pools) — Node pools with Kubernetes labels for nodeSelector / nodeAffinity targeting
 - [Existing VPC](https://github.com/nirvana-labs/terraform-nirvana-nks/tree/main/examples/existing-vpc) — Cluster in a pre-existing VPC
 
 <!-- BEGIN_TF_DOCS -->

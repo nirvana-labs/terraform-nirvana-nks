@@ -16,6 +16,7 @@ NKS clusters are created via the Nirvana Cloud provisioning service API. The con
 - `modules/node-pool/` — Standalone submodule for adding pools to an existing cluster independently
 - `examples/basic/` — Minimal cluster with a single worker pool
 - `examples/multi-pool/` — Multiple heterogeneous worker pools
+- `examples/labeled-pools/` — Node pools with Kubernetes labels
 - `examples/existing-vpc/` — Cluster in a pre-existing VPC
 
 ## Terraform provider
@@ -57,6 +58,7 @@ terraform init -backend=false && terraform validate          # root module
 cd modules/node-pool && terraform init -backend=false && terraform validate
 cd examples/basic && terraform init -backend=false && terraform validate
 cd examples/multi-pool && terraform init -backend=false && terraform validate
+cd examples/labeled-pools && terraform init -backend=false && terraform validate
 cd examples/existing-vpc && terraform init -backend=false && terraform validate
 ```
 
