@@ -35,7 +35,7 @@ module "nks" {
 
 The module creates a managed NKS cluster with a VPC, worker node pools, and firewall rules for Kubernetes API access and HTTP/HTTPS ingress. The control plane is fully managed by the NKS platform.
 
-> **Note:** After `terraform apply` completes, the control plane needs ~5 minutes before it is reachable. Worker nodes are typically ready ~8 minutes after apply.
+> **Note:** After `terraform apply` completes, the control plane needs ~10 minutes before it is reachable and the kubeconfig is fetchable.
 
 ## Fetching the kubeconfig
 
@@ -50,7 +50,7 @@ module "nks" {
 ```
 
 1. `terraform apply` — creates the cluster (`fetch_kubeconfig = false`, the default).
-2. Wait ~5 minutes for the control plane.
+2. Wait ~10 minutes for the control plane.
 3. Flip `fetch_kubeconfig = true` and `terraform apply` again. The kubeconfig is written to disk and the path is available via the `kubeconfig_path` output.
 
 Use it with `kubectl`:
@@ -199,7 +199,7 @@ No modules.
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the NKS cluster. | `string` | `"my-cluster"` | no |
 | <a name="input_create_firewall_rules"></a> [create\_firewall\_rules](#input\_create\_firewall\_rules) | Whether to create the default access firewall rules. | `bool` | `true` | no |
 | <a name="input_create_vpc"></a> [create\_vpc](#input\_create\_vpc) | Whether to create a new VPC. Set to false and provide vpc\_id to use an existing VPC. | `bool` | `true` | no |
-| <a name="input_fetch_kubeconfig"></a> [fetch\_kubeconfig](#input\_fetch\_kubeconfig) | Whether to fetch the cluster kubeconfig and write it to kubeconfig\_path. Set to true only after the cluster is ready (~5 minutes after initial apply); fetching before the control plane is reachable will fail. | `bool` | `false` | no |
+| <a name="input_fetch_kubeconfig"></a> [fetch\_kubeconfig](#input\_fetch\_kubeconfig) | Whether to fetch the cluster kubeconfig and write it to kubeconfig\_path. Set to true only after the cluster is ready (~10 minutes after initial apply); fetching before the control plane is reachable will fail. | `bool` | `false` | no |
 | <a name="input_ingress_cidrs"></a> [ingress\_cidrs](#input\_ingress\_cidrs) | CIDRs allowed to access the shared ingress (HTTP 80, HTTPS 443). | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |
 | <a name="input_kubeconfig_path"></a> [kubeconfig\_path](#input\_kubeconfig\_path) | Path to write the kubeconfig file when fetch\_kubeconfig is true. Defaults to .secrets/kubeconfig-<cluster\_name> relative to the root module. | `string` | `null` | no |
 | <a name="input_management_cidrs"></a> [management\_cidrs](#input\_management\_cidrs) | CIDRs allowed to access the Kubernetes API (443). | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |

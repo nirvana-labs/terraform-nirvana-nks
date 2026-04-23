@@ -85,7 +85,7 @@ variable "create_firewall_rules" {
 }
 
 variable "fetch_kubeconfig" {
-  description = "Whether to fetch the cluster kubeconfig and write it to kubeconfig_path. Set to true only after the cluster is ready (~5 minutes after initial apply); fetching before the control plane is reachable will fail."
+  description = "Whether to fetch the cluster kubeconfig and write it to kubeconfig_path. Set to true only after the cluster is ready (~10 minutes after initial apply); fetching before the control plane is reachable will fail."
   type        = bool
   default     = false
 }
