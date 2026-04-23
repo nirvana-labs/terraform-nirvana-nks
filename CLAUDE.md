@@ -12,7 +12,7 @@ NKS clusters are created via the Nirvana Cloud provisioning service API. The con
 - `variables.tf` — Public variable API
 - `outputs.tf` — Cluster IPs, VPC, ingress VIP, node pool IDs
 - `firewall.tf` — Default access firewall rules
-- `versions.tf` — Provider version constraints (nirvana-labs/nirvana >= 1.41)
+- `versions.tf` — Provider version constraints (nirvana-labs/nirvana >= 1.45)
 - `modules/node-pool/` — Standalone submodule for adding pools to an existing cluster independently
 - `examples/basic/` — Minimal cluster with a single worker pool
 - `examples/multi-pool/` — Multiple heterogeneous worker pools

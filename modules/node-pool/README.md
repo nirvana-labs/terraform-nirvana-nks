@@ -21,12 +21,12 @@ module "gpu_pool" {
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
-| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.41 |
+| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.45 |
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | >= 1.41 |
+| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | >= 1.45 |
 ## Resources
 
 | Name | Type |
@@ -40,6 +40,7 @@ module "gpu_pool" {
 | <a name="input_boot_volume_type"></a> [boot\_volume\_type](#input\_boot\_volume\_type) | Boot volume type: nvme or abs. | `string` | `"abs"` | no |
 | <a name="input_cluster_id"></a> [cluster\_id](#input\_cluster\_id) | ID of the NKS cluster to add the node pool to. | `string` | n/a | yes |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Instance type for the nodes (e.g. n1-standard-8). | `string` | n/a | yes |
+| <a name="input_labels"></a> [labels](#input\_labels) | Kubernetes labels to apply to each node in the pool. Keys under the kubernetes.io, k8s.io, and nirvanalabs.io prefixes are reserved by the platform. | `map(string)` | `{}` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the node pool. | `string` | n/a | yes |
 | <a name="input_node_count"></a> [node\_count](#input\_node\_count) | Number of nodes in the pool (1-100). | `number` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to attach to the node pool. | `list(string)` | `[]` | no |

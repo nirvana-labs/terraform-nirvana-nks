@@ -133,12 +133,22 @@ module "gpu_pool" {
 
 ## Firewall rules
 
+> **⚠️ Important:** `management_cidrs` and `ingress_cidrs` both default to `["0.0.0.0/0"]`, which exposes the Kubernetes API and ingress VIPs to the public internet. **Always** scope `management_cidrs` to your trusted networks (VPN, office egress, bastion) before using a cluster for anything non-trivial. `ingress_cidrs` may legitimately be `0.0.0.0/0` if the cluster serves public traffic, but be explicit about that choice.
+
 The module creates default firewall rules for:
 
-| Rule | Protocol | Ports | Source |
-|------|----------|-------|--------|
-| K8s API | TCP | 443 | `management_cidrs` |
-| HTTP/HTTPS ingress | TCP | 80, 443 | `ingress_cidrs` |
+| Rule | Protocol | Ports | Source | Default |
+|------|----------|-------|--------|---------|
+| K8s API | TCP | 443 | `management_cidrs` | `0.0.0.0/0` (open) |
+| HTTP/HTTPS ingress | TCP | 80, 443 | `ingress_cidrs` | `0.0.0.0/0` (open) |
+
+```hcl
+module "nks" {
+  # ...
+  management_cidrs = ["10.0.0.0/8", "203.0.113.42/32"]  # VPN + bastion
+  ingress_cidrs    = ["0.0.0.0/0"]                       # public ingress
+}
+```
 
 Management and ingress rules target the K8s API VIP and ingress VIP respectively (not the whole subnet). Intra-cluster traffic is allowed by the platform by default. Set `create_firewall_rules = false` to manage firewall rules externally.
 
@@ -155,14 +165,14 @@ Management and ingress rules target the K8s API VIP and ingress VIP respectively
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.0 |
-| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.41 |
+| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.45 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_local"></a> [local](#provider\_local) | >= 2.0 |
-| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | 1.41.0 |
+| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | 1.45.0 |
 
 ## Modules
 
@@ -192,7 +202,7 @@ No modules.
 | <a name="input_ingress_cidrs"></a> [ingress\_cidrs](#input\_ingress\_cidrs) | CIDRs allowed to access the shared ingress (HTTP 80, HTTPS 443). | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |
 | <a name="input_kubeconfig_path"></a> [kubeconfig\_path](#input\_kubeconfig\_path) | Path to write the kubeconfig file when fetch\_kubeconfig is true. Defaults to .secrets/kubeconfig-<cluster\_name> relative to the root module. | `string` | `null` | no |
 | <a name="input_management_cidrs"></a> [management\_cidrs](#input\_management\_cidrs) | CIDRs allowed to access the Kubernetes API (443). | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |
-| <a name="input_node_pools"></a> [node\_pools](#input\_node\_pools) | Map of worker node pool definitions. Keys are pool names. | <pre>map(object({<br/>    node_count       = number<br/>    instance_type    = string<br/>    boot_volume_size = optional(number, 100)<br/>    boot_volume_type = optional(string, "abs")<br/>    tags             = optional(list(string), [])<br/>  }))</pre> | n/a | yes |
+| <a name="input_node_pools"></a> [node\_pools](#input\_node\_pools) | Map of worker node pool definitions. Keys are pool names. | <pre>map(object({<br/>    node_count       = number<br/>    instance_type    = string<br/>    boot_volume_size = optional(number, 100)<br/>    boot_volume_type = optional(string, "abs")<br/>    labels           = optional(map(string), {})<br/>    tags             = optional(list(string), [])<br/>  }))</pre> | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | Nirvana Labs project ID. | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | Nirvana Labs region to deploy in. | `string` | `"us-sva-2"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to attach to all resources. | `list(string)` | `[]` | no |

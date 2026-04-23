@@ -45,6 +45,12 @@ variable "boot_volume_type" {
   }
 }
 
+variable "labels" {
+  description = "Kubernetes labels to apply to each node in the pool. Keys under the kubernetes.io, k8s.io, and nirvanalabs.io prefixes are reserved by the platform."
+  type        = map(string)
+  default     = {}
+}
+
 variable "tags" {
   description = "Tags to attach to the node pool."
   type        = list(string)

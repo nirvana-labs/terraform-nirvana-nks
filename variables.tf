@@ -41,6 +41,7 @@ variable "node_pools" {
     instance_type    = string
     boot_volume_size = optional(number, 100)
     boot_volume_type = optional(string, "abs")
+    labels           = optional(map(string), {})
     tags             = optional(list(string), [])
   }))
 

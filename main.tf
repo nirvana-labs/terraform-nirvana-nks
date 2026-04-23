@@ -40,6 +40,7 @@ resource "nirvana_nks_node_pool" "workers" {
       size = each.value.boot_volume_size
       type = each.value.boot_volume_type
     }
+    labels = [for k, v in each.value.labels : "${k}=${v}"]
   }
 
   tags = concat(var.tags, each.value.tags)

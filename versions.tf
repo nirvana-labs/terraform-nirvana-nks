@@ -4,7 +4,7 @@ terraform {
   required_providers {
     nirvana = {
       source  = "nirvana-labs/nirvana"
-      version = ">= 1.41"
+      version = ">= 1.45"
     }
     local = {
       source  = "hashicorp/local"

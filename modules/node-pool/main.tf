@@ -9,6 +9,7 @@ resource "nirvana_nks_node_pool" "this" {
       size = var.boot_volume_size
       type = var.boot_volume_type
     }
+    labels = [for k, v in var.labels : "${k}=${v}"]
   }
 
   tags = var.tags
