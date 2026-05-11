@@ -96,6 +96,12 @@ variable "kubeconfig_path" {
   default     = null
 }
 
+variable "autoscaling" {
+  description = "Whether the cluster opts into autoscaling. Default true (recommended): a Karpenter-powered controller scales node pools to match pod demand with graceful drain on scale-down. Set to false for fixed-size pools you grow manually via node_count; see README for graceful capacity-removal options."
+  type        = bool
+  default     = true
+}
+
 variable "tags" {
   description = "Tags to attach to all resources."
   type        = list(string)
