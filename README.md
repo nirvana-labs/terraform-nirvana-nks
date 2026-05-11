@@ -158,6 +158,8 @@ Clusters created by this module opt into autoscaling by default. A Karpenter-pow
 
 In this shape, `node_count` on each pool is the **initial** size at cluster creation; after that, the controller is the source of truth for pool size. Re-applying Terraform with a different `node_count` will surface a diff, but the controller should be doing the scaling — see "Scaling node pools" below.
 
+> **Note:** any `terraform apply` that includes a node pool resource in its plan will reset `node_count` to the config value, overriding autoscaler-managed sizes. Use `-target` to scope applies that aren't intended to resize pools, or update the config to the current observed count before applying.
+
 Opt out by setting `autoscaling = false`:
 
 ```hcl
