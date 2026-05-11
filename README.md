@@ -169,6 +169,8 @@ module "nks" {
 
 When opted out, pools are fixed-size. Increasing `node_count` and re-applying is the supported way to add capacity. Removing capacity has the same rules as the autoscaling-on case below.
 
+> **Upgrading from earlier module versions:** the `autoscaling` variable is new. Module versions before this one didn't pass the field to the cluster resource, so existing clusters will see it explicitly set to `true` on the next `terraform apply` unless you override. If a cluster has been running with fixed-size pools and you want to keep it that way, set `autoscaling = false` before applying.
+
 ## Scaling node pools
 
 Growing a pool by increasing `node_count` is graceful in both modes — the platform allocates new workers and they join the cluster.
