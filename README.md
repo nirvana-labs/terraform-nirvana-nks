@@ -152,6 +152,43 @@ module "nks" {
 
 Management and ingress rules target the K8s API VIP and ingress VIP respectively (not the whole subnet). Intra-cluster traffic is allowed by the platform by default. Set `create_firewall_rules = false` to manage firewall rules externally.
 
+## Autoscaling
+
+Clusters created by this module opt into autoscaling by default. A Karpenter-powered controller manages each node pool's size: it provisions new nodes when pending pods need capacity, and consolidates / scales down underutilized nodes by cordoning them and draining workloads while respecting `PodDisruptionBudget`s and pod `terminationGracePeriodSeconds`.
+
+In this shape, `node_count` on each pool is the **initial** size at cluster creation; after that, the controller is the source of truth for pool size. Re-applying Terraform with a different `node_count` will surface a diff, but the controller should be doing the scaling — see "Scaling node pools" below.
+
+> **Note:** any `terraform apply` that includes a node pool resource in its plan will reset `node_count` to the config value, overriding autoscaler-managed sizes. Use `-target` to scope applies that aren't intended to resize pools, or update the config to the current observed count before applying.
+
+Opt out by setting `autoscaling = false`:
+
+```hcl
+module "nks" {
+  # ...
+  autoscaling = false
+}
+```
+
+When opted out, pools are fixed-size. Increasing `node_count` and re-applying is the supported way to add capacity. Removing capacity has the same rules as the autoscaling-on case below.
+
+> **Upgrading from earlier module versions:** the `autoscaling` variable is new. Module versions before this one didn't pass the field to the cluster resource, so existing clusters will see it explicitly set to `true` on the next `terraform apply` unless you override. If a cluster has been running with fixed-size pools and you want to keep it that way, set `autoscaling = false` before applying.
+
+## Scaling node pools
+
+Growing a pool by increasing `node_count` is graceful in both modes — the platform allocates new workers and they join the cluster.
+
+Shrinking a pool by decreasing `node_count` (via Terraform, dashboard slider, or CLI) is currently disruptive: the platform picks a worker and terminates it without cordon, drain, `PodDisruptionBudget` respect, or volume detach, so anything running on that node is killed abruptly.
+
+Two ways to remove capacity gracefully today:
+
+- **Enable autoscaling** (the default). A Karpenter-powered controller scales pools down for you, cordoning nodes and draining workloads while respecting your `PodDisruptionBudget`s and `terminationGracePeriodSeconds`.
+- **Surgical removal via API or UI.** To target a specific worker yourself, do the preflight before invoking the per-node delete action:
+
+  1. Cordon the node: `kubectl cordon <node>`
+  2. Drain it: `kubectl drain <node> --ignore-daemonsets --delete-emptydir-data`
+  3. Migrate or detach any persistent volumes the node was using.
+  4. Delete the node by ID via the API or dashboard.
+
 ## Examples
 
 - [Basic](https://github.com/nirvana-labs/terraform-nirvana-nks/tree/main/examples/basic) — Minimal cluster with a single worker pool
@@ -172,8 +209,8 @@ Management and ingress rules target the K8s API VIP and ingress VIP respectively
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_local"></a> [local](#provider\_local) | >= 2.0 |
-| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | 1.45.0 |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.8.0 |
+| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | 1.45.1 |
 
 ## Modules
 
@@ -196,6 +233,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
+| <a name="input_autoscaling"></a> [autoscaling](#input\_autoscaling) | Whether the cluster opts into autoscaling. Default true (recommended): a Karpenter-powered controller scales node pools to match pod demand with graceful drain on scale-down. Set to false for fixed-size pools you grow manually via node\_count; see README for graceful capacity-removal options. | `bool` | `true` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the NKS cluster. | `string` | `"my-cluster"` | no |
 | <a name="input_create_firewall_rules"></a> [create\_firewall\_rules](#input\_create\_firewall\_rules) | Whether to create the default access firewall rules. | `bool` | `true` | no |
 | <a name="input_create_vpc"></a> [create\_vpc](#input\_create\_vpc) | Whether to create a new VPC. Set to false and provide vpc\_id to use an existing VPC. | `bool` | `true` | no |
