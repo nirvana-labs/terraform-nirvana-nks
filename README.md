@@ -24,14 +24,16 @@ module "nks" {
 
   node_pools = {
     default = {
-      node_count    = 2
-      instance_type = "n1-standard-8"
+      node_count    = 1
+      instance_type = "n1-highcpu-2"
     }
   }
 }
 ```
 
 > **Tip:** The examples above reference `?ref=main`. For production use, pin to a release tag (e.g. `?ref=v1.0.0`) to avoid unexpected changes.
+
+> **Note:** Examples use small instance types and `node_count = 1` so they fit within trial-account resource quotas. NKS autoscaling is on by default and will scale pools up as workloads demand capacity. Use larger `instance_type`s and higher initial `node_count`s for production sizing.
 
 The module creates a managed NKS cluster with a VPC, worker node pools, and firewall rules for Kubernetes API access and HTTP/HTTPS ingress. The control plane is fully managed by the NKS platform.
 
@@ -77,8 +79,8 @@ module "nks" {
 
   node_pools = {
     default = {
-      node_count    = 2
-      instance_type = "n1-standard-8"
+      node_count    = 1
+      instance_type = "n1-highcpu-2"
     }
   }
 }
@@ -99,13 +101,13 @@ module "nks" {
 
   node_pools = {
     general = {
-      node_count    = 3
-      instance_type = "n1-standard-8"
+      node_count    = 1
+      instance_type = "n1-highcpu-2"
     }
     compute = {
-      node_count       = 2
-      instance_type    = "n1-standard-16"
-      boot_volume_size = 200
+      node_count       = 1
+      instance_type    = "n1-standard-2"
+      boot_volume_size = 80
     }
   }
 
@@ -126,8 +128,8 @@ module "gpu_pool" {
 
   cluster_id    = module.nks.cluster_id
   name          = "gpu"
-  node_count    = 2
-  instance_type = "n1-standard-16"
+  node_count    = 1
+  instance_type = "n1-standard-2"
 }
 ```
 
@@ -154,7 +156,13 @@ Management and ingress rules target the K8s API VIP and ingress VIP respectively
 
 ## Autoscaling
 
-Clusters created by this module opt into autoscaling by default. A Karpenter-powered controller manages each node pool's size: it provisions new nodes when pending pods need capacity, and consolidates / scales down underutilized nodes by cordoning them and draining workloads while respecting `PodDisruptionBudget`s and pod `terminationGracePeriodSeconds`.
+Clusters created by this module opt into autoscaling by default. The NKS autoscaling controller manages each node pool's size — see the [Nirvana NKS autoscaling docs](https://docs.nirvanalabs.io/cloud/nks/autoscaling/) for full behavior.
+
+What's immediately relevant for using this module:
+
+- **Scale-up** is driven by pod resource _requests_ (not usage). Pending pods get matched against the declared `node_pools` and the best-fitting pool gets a new node. Pods with under-set requests can over-pack a node and degrade performance — set realistic requests.
+- **Scale-down** consolidates workloads onto fewer nodes when utilization drops, cordoning the targeted node and draining its pods while respecting `PodDisruptionBudget`s and `terminationGracePeriodSeconds`.
+- **Pool boundaries are respected.** The autoscaler picks among pools you've declared; it won't introduce new instance types on its own. To make a new shape available, add another `node_pools` entry.
 
 In this shape, `node_count` on each pool is the **initial** size at cluster creation; after that, the controller is the source of truth for pool size. Re-applying Terraform with a different `node_count` will surface a diff, but the controller should be doing the scaling — see "Scaling node pools" below.
 
@@ -181,7 +189,7 @@ Shrinking a pool by decreasing `node_count` (via Terraform, dashboard slider, or
 
 Two ways to remove capacity gracefully today:
 
-- **Enable autoscaling** (the default). A Karpenter-powered controller scales pools down for you, cordoning nodes and draining workloads while respecting your `PodDisruptionBudget`s and `terminationGracePeriodSeconds`.
+- **Enable autoscaling** (the default). The NKS autoscaling controller scales pools down for you, cordoning nodes and draining workloads while respecting your `PodDisruptionBudget`s and `terminationGracePeriodSeconds`.
 - **Surgical removal via API or UI.** To target a specific worker yourself, do the preflight before invoking the per-node delete action:
 
   1. Cordon the node: `kubectl cordon <node>`
@@ -203,14 +211,14 @@ Two ways to remove capacity gracefully today:
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.0 |
-| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.45 |
+| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.47 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_local"></a> [local](#provider\_local) | 2.8.0 |
-| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | 1.45.1 |
+| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | 1.47.1 |
 
 ## Modules
 
@@ -233,7 +241,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
-| <a name="input_autoscaling"></a> [autoscaling](#input\_autoscaling) | Whether the cluster opts into autoscaling. Default true (recommended): a Karpenter-powered controller scales node pools to match pod demand with graceful drain on scale-down. Set to false for fixed-size pools you grow manually via node\_count; see README for graceful capacity-removal options. | `bool` | `true` | no |
+| <a name="input_autoscaling"></a> [autoscaling](#input\_autoscaling) | Whether the cluster opts into autoscaling. Default true (recommended): the NKS autoscaling controller scales node pools to match pod demand with graceful drain on scale-down. Set to false for fixed-size pools you grow manually via node\_count; see README for graceful capacity-removal options. | `bool` | `true` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the NKS cluster. | `string` | `"my-cluster"` | no |
 | <a name="input_create_firewall_rules"></a> [create\_firewall\_rules](#input\_create\_firewall\_rules) | Whether to create the default access firewall rules. | `bool` | `true` | no |
 | <a name="input_create_vpc"></a> [create\_vpc](#input\_create\_vpc) | Whether to create a new VPC. Set to false and provide vpc\_id to use an existing VPC. | `bool` | `true` | no |
@@ -241,7 +249,7 @@ No modules.
 | <a name="input_ingress_cidrs"></a> [ingress\_cidrs](#input\_ingress\_cidrs) | CIDRs allowed to access the shared ingress (HTTP 80, HTTPS 443). | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |
 | <a name="input_kubeconfig_path"></a> [kubeconfig\_path](#input\_kubeconfig\_path) | Path to write the kubeconfig file when fetch\_kubeconfig is true. Defaults to .secrets/kubeconfig-<cluster\_name> relative to the root module. | `string` | `null` | no |
 | <a name="input_management_cidrs"></a> [management\_cidrs](#input\_management\_cidrs) | CIDRs allowed to access the Kubernetes API (443). | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |
-| <a name="input_node_pools"></a> [node\_pools](#input\_node\_pools) | Map of worker node pool definitions. Keys are pool names. | <pre>map(object({<br/>    node_count       = number<br/>    instance_type    = string<br/>    boot_volume_size = optional(number, 100)<br/>    boot_volume_type = optional(string, "abs")<br/>    labels           = optional(map(string), {})<br/>    tags             = optional(list(string), [])<br/>  }))</pre> | n/a | yes |
+| <a name="input_node_pools"></a> [node\_pools](#input\_node\_pools) | Map of worker node pool definitions. Keys are pool names. | <pre>map(object({<br/>    node_count       = number<br/>    instance_type    = string<br/>    boot_volume_size = optional(number, 64)<br/>    boot_volume_type = optional(string, "abs")<br/>    labels           = optional(map(string), {})<br/>    tags             = optional(list(string), [])<br/>  }))</pre> | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | Nirvana Labs project ID. | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | Nirvana Labs region to deploy in. | `string` | `"us-sva-2"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to attach to all resources. | `list(string)` | `[]` | no |

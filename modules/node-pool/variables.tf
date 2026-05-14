@@ -26,7 +26,7 @@ variable "instance_type" {
 variable "boot_volume_size" {
   description = "Boot volume size in GB (64-512)."
   type        = number
-  default     = 100
+  default     = 64
 
   validation {
     condition     = var.boot_volume_size >= 64 && var.boot_volume_size <= 512

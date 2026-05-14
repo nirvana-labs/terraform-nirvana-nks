@@ -39,7 +39,7 @@ variable "node_pools" {
   type = map(object({
     node_count       = number
     instance_type    = string
-    boot_volume_size = optional(number, 100)
+    boot_volume_size = optional(number, 64)
     boot_volume_type = optional(string, "abs")
     labels           = optional(map(string), {})
     tags             = optional(list(string), [])
@@ -97,7 +97,7 @@ variable "kubeconfig_path" {
 }
 
 variable "autoscaling" {
-  description = "Whether the cluster opts into autoscaling. Default true (recommended): a Karpenter-powered controller scales node pools to match pod demand with graceful drain on scale-down. Set to false for fixed-size pools you grow manually via node_count; see README for graceful capacity-removal options."
+  description = "Whether the cluster opts into autoscaling. Default true (recommended): the NKS autoscaling controller scales node pools to match pod demand with graceful drain on scale-down. Set to false for fixed-size pools you grow manually via node_count; see README for graceful capacity-removal options."
   type        = bool
   default     = true
 }
