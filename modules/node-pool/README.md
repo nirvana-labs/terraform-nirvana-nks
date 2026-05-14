@@ -11,8 +11,8 @@ module "gpu_pool" {
 
   cluster_id    = "cluster-id"
   name          = "gpu"
-  node_count    = 2
-  instance_type = "n1-standard-16"
+  node_count    = 1
+  instance_type = "n1-standard-2"
 }
 ```
 
@@ -21,12 +21,12 @@ module "gpu_pool" {
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
-| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.45 |
+| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.47 |
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | >= 1.45 |
+| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | >= 1.47 |
 ## Resources
 
 | Name | Type |
@@ -36,7 +36,7 @@ module "gpu_pool" {
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
-| <a name="input_boot_volume_size"></a> [boot\_volume\_size](#input\_boot\_volume\_size) | Boot volume size in GB (64-512). | `number` | `100` | no |
+| <a name="input_boot_volume_size"></a> [boot\_volume\_size](#input\_boot\_volume\_size) | Boot volume size in GB (64-512). | `number` | `64` | no |
 | <a name="input_boot_volume_type"></a> [boot\_volume\_type](#input\_boot\_volume\_type) | Boot volume type: nvme or abs. | `string` | `"abs"` | no |
 | <a name="input_cluster_id"></a> [cluster\_id](#input\_cluster\_id) | ID of the NKS cluster to add the node pool to. | `string` | n/a | yes |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Instance type for the nodes (e.g. n1-standard-8). | `string` | n/a | yes |
