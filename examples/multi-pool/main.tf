@@ -1,9 +1,10 @@
 module "nks" {
   source = "../../"
 
-  cluster_name = "multi-pool-demo"
-  project_id   = var.project_id
-  region       = "us-sva-2"
+  cluster_name       = "multi-pool-demo"
+  kubernetes_version = "v1.34.4"
+  project_id         = var.project_id
+  region             = "us-sva-2"
 
   node_pools = {
     general = {

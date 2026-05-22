@@ -4,6 +4,11 @@ variable "cluster_name" {
   default     = "my-cluster"
 }
 
+variable "kubernetes_version" {
+  description = "Kubernetes version for the cluster (e.g. \"v1.34.4\"). Look up available versions via the nirvana_nks_cluster_kubernetes_versions data source. Changing this value recreates the cluster — there is no in-place upgrade."
+  type        = string
+}
+
 variable "project_id" {
   description = "Nirvana Labs project ID."
   type        = string

@@ -20,12 +20,13 @@ locals {
 }
 
 resource "nirvana_nks_cluster" "this" {
-  name        = var.cluster_name
-  project_id  = var.project_id
-  region      = var.region
-  vpc_id      = local.vpc_id
-  autoscaling = var.autoscaling
-  tags        = var.tags
+  name               = var.cluster_name
+  kubernetes_version = var.kubernetes_version
+  project_id         = var.project_id
+  region             = var.region
+  vpc_id             = local.vpc_id
+  autoscaling        = var.autoscaling
+  tags               = var.tags
 }
 
 resource "nirvana_nks_node_pool" "workers" {
