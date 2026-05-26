@@ -2,7 +2,7 @@ module "nks" {
   source = "../../"
 
   cluster_name       = "basic-demo"
-  kubernetes_version = "v1.34.4"
+  kubernetes_version = var.kubernetes_version
   project_id         = var.project_id
   region             = "us-sva-2"
 

@@ -20,9 +20,11 @@ import (
 )
 
 const (
-	// kubernetes_version passed to examples/basic. The assertion below
-	// verifies kubelet on each node reports a matching minor version.
-	expectedK8sMinorPrefix = "v1.34"
+	// Single source of truth for the K8s version under test. Passed to
+	// examples/basic via opts.Vars and used to derive the expected kubelet
+	// prefix in the version assertion below — so the test and example
+	// can't drift.
+	testK8sVersion = "v1.34.4"
 
 	// NKS control planes typically reach the kubeconfig-fetchable state
 	// in ~10 min. Sleep for a head start, then retry the second apply
@@ -54,8 +56,10 @@ func TestBasicCluster(t *testing.T) {
 
 	opts := &terraform.Options{
 		TerraformDir: "../examples/basic",
-		Vars:         map[string]interface{}{},
-		NoColor:      true,
+		Vars: map[string]interface{}{
+			"kubernetes_version": testK8sVersion,
+		},
+		NoColor: true,
 	}
 
 	defer terraform.Destroy(t, opts)
@@ -102,11 +106,12 @@ func TestBasicCluster(t *testing.T) {
 	})
 
 	t.Log("Asserting kubelet version matches the configured kubernetes_version")
+	expectedPrefix := minorVersionPrefix(testK8sVersion)
 	for _, n := range k8s.GetNodes(t, k8sOpts) {
 		kubelet := n.Status.NodeInfo.KubeletVersion
 		require.True(t,
-			strings.HasPrefix(kubelet, expectedK8sMinorPrefix),
-			"node %s reports kubelet %s; expected prefix %s", n.Name, kubelet, expectedK8sMinorPrefix)
+			strings.HasPrefix(kubelet, expectedPrefix),
+			"node %s reports kubelet %s; expected prefix %s", n.Name, kubelet, expectedPrefix)
 	}
 
 	t.Log("Smoke test: scheduling a pod")
@@ -138,6 +143,18 @@ func isNodeReady(n corev1.Node) bool {
 		}
 	}
 	return false
+}
+
+// minorVersionPrefix returns "vMAJOR.MINOR." for an input like "v1.34.4",
+// suitable for matching against a kubelet version string with HasPrefix.
+// The trailing dot prevents a false match between e.g. "v1.34" and a
+// hypothetical future "v1.340.x".
+func minorVersionPrefix(v string) string {
+	parts := strings.SplitN(v, ".", 3)
+	if len(parts) < 2 {
+		return v
+	}
+	return strings.Join(parts[:2], ".") + "."
 }
 
 // firstLine returns the first non-empty line of s, truncated to 200 chars.
