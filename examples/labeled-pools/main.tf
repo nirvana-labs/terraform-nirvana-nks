@@ -9,19 +9,20 @@ module "nks" {
   node_pools = {
     # General-purpose pool for most workloads.
     general = {
-      node_count    = 2
-      instance_type = "n1-standard-8"
+      node_count    = 1
+      instance_type = "n1-highcpu-2"
       labels = {
         workload = "general"
       }
     }
-    # Memory-optimized pool targeted by nodeSelector / nodeAffinity on memory-hungry Pods.
-    memory = {
-      node_count       = 2
-      instance_type    = "n1-standard-16"
-      boot_volume_size = 200
+    # Second pool with different sizing and labels, targetable via nodeSelector / nodeAffinity.
+    # In production this would typically be a memory- or compute-optimized instance type.
+    premium = {
+      node_count       = 1
+      instance_type    = "n1-standard-2"
+      boot_volume_size = 80
       labels = {
-        workload = "memory"
+        workload = "premium"
         tier     = "premium"
       }
     }

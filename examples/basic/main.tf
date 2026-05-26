@@ -6,10 +6,11 @@ module "nks" {
   project_id         = var.project_id
   region             = "us-sva-2"
 
+  # node_count is the initial size; autoscaling (on by default) scales pools up as workloads need capacity.
   node_pools = {
     default = {
-      node_count    = 2
-      instance_type = "n1-standard-8"
+      node_count    = 1
+      instance_type = "n1-highcpu-2"
     }
   }
 

@@ -17,8 +17,8 @@ module "nks" {
 
   node_pools = {
     default = {
-      node_count    = 2
-      instance_type = "n1-standard-8"
+      node_count    = 1
+      instance_type = "n1-highcpu-2"
     }
   }
 

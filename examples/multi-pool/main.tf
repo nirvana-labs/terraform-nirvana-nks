@@ -8,13 +8,13 @@ module "nks" {
 
   node_pools = {
     general = {
-      node_count    = 3
-      instance_type = "n1-standard-8"
+      node_count    = 1
+      instance_type = "n1-highcpu-2"
     }
     compute = {
-      node_count       = 2
-      instance_type    = "n1-standard-16"
-      boot_volume_size = 200
+      node_count       = 1
+      instance_type    = "n1-standard-2"
+      boot_volume_size = 80
     }
   }
 
