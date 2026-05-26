@@ -30,8 +30,8 @@ output "kubeconfig" {
 }
 
 output "kubeconfig_path" {
-  description = "Path to the written kubeconfig file. Null unless fetch_kubeconfig is true."
-  value       = var.fetch_kubeconfig ? local_sensitive_file.kubeconfig[0].filename : null
+  description = "Absolute path to the written kubeconfig file. Null unless fetch_kubeconfig is true."
+  value       = var.fetch_kubeconfig ? abspath(local_sensitive_file.kubeconfig[0].filename) : null
 }
 
 output "vpc_id" {
