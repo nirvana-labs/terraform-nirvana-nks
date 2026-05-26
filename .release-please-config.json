@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "packages": {
+    ".": {
+      "release-type": "terraform-module",
+      "package-name": "terraform-nirvana-nks",
+      "include-v-in-tag": true,
+      "include-component-in-tag": false,
+      "bootstrap-sha": "0e2240455ff34c4f2ed7f517fe41878ae20d9aae",
+      "changelog-sections": [
+        { "type": "feat", "section": "Features" },
+        { "type": "fix", "section": "Bug Fixes" },
+        { "type": "perf", "section": "Performance Improvements" },
+        { "type": "revert", "section": "Reverts" },
+        { "type": "deps", "section": "Dependencies" },
+        { "type": "docs", "hidden": true },
+        { "type": "refactor", "hidden": true },
+        { "type": "test", "hidden": true },
+        { "type": "build", "hidden": true },
+        { "type": "ci", "hidden": true },
+        { "type": "chore", "hidden": true }
+      ]
+    }
+  }
+}
