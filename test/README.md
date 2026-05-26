@@ -4,7 +4,7 @@ Terratest-based integration tests that provision a real NKS cluster against your
 
 ## Prerequisites
 
-- Go 1.21+
+- Go 1.25+
 - `terraform` ≥ 1.5 on `PATH`
 - `kubectl` on `PATH`
 - A Nirvana Labs API key and a sandbox project ID

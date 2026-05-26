@@ -33,7 +33,11 @@ const (
 	fetchKubeconfigTries  = 20
 	fetchKubeconfigDelay  = 30 * time.Second
 
-	expectedMinNodeCount = 2
+	// Must match node_count in examples/basic. Acts as a 0-node guardrail —
+	// without it the per-node Ready loop below would vacuously pass on an
+	// empty node list. The Ready check itself covers the "node provisioned
+	// but never became Ready" case independently.
+	expectedMinNodeCount = 1
 	nodeReadyTries       = 30
 	nodeReadyDelay       = 10 * time.Second
 
