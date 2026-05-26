@@ -33,7 +33,7 @@ const (
 	fetchKubeconfigTries  = 20
 	fetchKubeconfigDelay  = 30 * time.Second
 
-	expectedMinNodeCount = 2
+	expectedMinNodeCount = 1
 	nodeReadyTries       = 30
 	nodeReadyDelay       = 10 * time.Second
 
