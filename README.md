@@ -18,9 +18,10 @@ set -a; source .env; set +a
 module "nks" {
   source = "git::https://github.com/nirvana-labs/terraform-nirvana-nks.git?ref=main"
 
-  cluster_name = "basic-demo"
-  project_id   = var.project_id
-  region       = "us-sva-2"
+  cluster_name       = "basic-demo"
+  kubernetes_version = "v1.34.4"
+  project_id         = var.project_id
+  region             = "us-sva-2"
 
   node_pools = {
     default = {
@@ -36,6 +37,8 @@ module "nks" {
 > **Note:** Examples use small instance types and `node_count = 1` so they fit within trial-account resource quotas. NKS autoscaling is on by default and will scale pools up as workloads demand capacity. Use larger `instance_type`s and higher initial `node_count`s for production sizing.
 
 The module creates a managed NKS cluster with a VPC, worker node pools, and firewall rules for Kubernetes API access and HTTP/HTTPS ingress. The control plane is fully managed by the NKS platform.
+
+> **Note:** `kubernetes_version` is required. Look up available versions via the [`nirvana_nks_cluster_kubernetes_versions`](https://registry.terraform.io/providers/nirvana-labs/nirvana/latest/docs/data-sources/nks_cluster_kubernetes_versions) data source. Changing `kubernetes_version` recreates the cluster — there is no in-place upgrade.
 
 > **Note:** After `terraform apply` completes, the control plane needs ~10 minutes before it is reachable and the kubeconfig is fetchable.
 
@@ -72,10 +75,11 @@ By default the module creates a new VPC. To use an existing VPC, set `create_vpc
 module "nks" {
   source = "git::https://github.com/nirvana-labs/terraform-nirvana-nks.git?ref=main"
 
-  cluster_name = "existing-vpc-demo"
-  project_id   = var.project_id
-  create_vpc   = false
-  vpc_id       = nirvana_networking_vpc.this.id
+  cluster_name       = "existing-vpc-demo"
+  kubernetes_version = "v1.34.4"
+  project_id         = var.project_id
+  create_vpc         = false
+  vpc_id             = nirvana_networking_vpc.this.id
 
   node_pools = {
     default = {
@@ -96,8 +100,9 @@ Define heterogeneous worker pools by adding entries to the `node_pools` map:
 module "nks" {
   source = "git::https://github.com/nirvana-labs/terraform-nirvana-nks.git?ref=main"
 
-  cluster_name = "multi-pool-demo"
-  project_id   = var.project_id
+  cluster_name       = "multi-pool-demo"
+  kubernetes_version = "v1.34.4"
+  project_id         = var.project_id
 
   node_pools = {
     general = {
@@ -211,14 +216,14 @@ Two ways to remove capacity gracefully today:
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.0 |
-| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.47 |
+| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.50 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_local"></a> [local](#provider\_local) | 2.8.0 |
-| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | 1.47.1 |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.9.0 |
+| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | 1.50.0 |
 
 ## Modules
 
@@ -248,6 +253,7 @@ No modules.
 | <a name="input_fetch_kubeconfig"></a> [fetch\_kubeconfig](#input\_fetch\_kubeconfig) | Whether to fetch the cluster kubeconfig and write it to kubeconfig\_path. Set to true only after the cluster is ready (~10 minutes after initial apply); fetching before the control plane is reachable will fail. | `bool` | `false` | no |
 | <a name="input_ingress_cidrs"></a> [ingress\_cidrs](#input\_ingress\_cidrs) | CIDRs allowed to access the shared ingress (HTTP 80, HTTPS 443). | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |
 | <a name="input_kubeconfig_path"></a> [kubeconfig\_path](#input\_kubeconfig\_path) | Path to write the kubeconfig file when fetch\_kubeconfig is true. Defaults to .secrets/kubeconfig-<cluster\_name> relative to the root module. | `string` | `null` | no |
+| <a name="input_kubernetes_version"></a> [kubernetes\_version](#input\_kubernetes\_version) | Kubernetes version for the cluster (e.g. "v1.34.4"). Look up available versions via the nirvana\_nks\_cluster\_kubernetes\_versions data source. Changing this value recreates the cluster — there is no in-place upgrade. | `string` | n/a | yes |
 | <a name="input_management_cidrs"></a> [management\_cidrs](#input\_management\_cidrs) | CIDRs allowed to access the Kubernetes API (443). | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |
 | <a name="input_node_pools"></a> [node\_pools](#input\_node\_pools) | Map of worker node pool definitions. Keys are pool names. | <pre>map(object({<br/>    node_count       = number<br/>    instance_type    = string<br/>    boot_volume_size = optional(number, 64)<br/>    boot_volume_type = optional(string, "abs")<br/>    labels           = optional(map(string), {})<br/>    tags             = optional(list(string), [])<br/>  }))</pre> | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | Nirvana Labs project ID. | `string` | n/a | yes |

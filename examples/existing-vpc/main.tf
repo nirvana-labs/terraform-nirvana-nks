@@ -8,11 +8,12 @@ resource "nirvana_networking_vpc" "this" {
 module "nks" {
   source = "../../"
 
-  cluster_name = "existing-vpc-demo"
-  project_id   = var.project_id
-  region       = "us-sva-2"
-  create_vpc   = false
-  vpc_id       = nirvana_networking_vpc.this.id
+  cluster_name       = "existing-vpc-demo"
+  kubernetes_version = "v1.34.4"
+  project_id         = var.project_id
+  region             = "us-sva-2"
+  create_vpc         = false
+  vpc_id             = nirvana_networking_vpc.this.id
 
   node_pools = {
     default = {

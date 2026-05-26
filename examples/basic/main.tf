@@ -1,9 +1,10 @@
 module "nks" {
   source = "../../"
 
-  cluster_name = "basic-demo"
-  project_id   = var.project_id
-  region       = "us-sva-2"
+  cluster_name       = "basic-demo"
+  kubernetes_version = var.kubernetes_version
+  project_id         = var.project_id
+  region             = "us-sva-2"
 
   # node_count is the initial size; autoscaling (on by default) scales pools up as workloads need capacity.
   node_pools = {
@@ -18,5 +19,5 @@ module "nks" {
   # management_cidrs = ["10.0.0.0/8"]   # e.g. VPN / bastion egress
   # ingress_cidrs    = ["0.0.0.0/0"]    # public ingress (default)
 
-  # fetch_kubeconfig = true   # uncomment after the first apply (~10 min wait)
+  fetch_kubeconfig = var.fetch_kubeconfig
 }
