@@ -1,5 +1,6 @@
 module "nks" {
-  source = "../../"
+  source  = "nirvana-labs/nks/nirvana"
+  version = "~> 0.2.0"
 
   cluster_name       = "basic-demo"
   kubernetes_version = var.kubernetes_version

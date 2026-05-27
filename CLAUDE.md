@@ -62,9 +62,9 @@ cd examples/labeled-pools && terraform init -backend=false && terraform validate
 cd examples/existing-vpc && terraform init -backend=false && terraform validate
 ```
 
-## Examples use local source
+## Examples pin the registry source
 
-Examples currently use `source = "../../"` for local development. Update to `source = "nirvana-labs/nks/nirvana"` before publishing to the Terraform registry.
+Examples and README snippets use `source = "nirvana-labs/nks/nirvana"` with a `version` constraint so consumers can copy them directly. `terraform validate` in an example directory downloads the pinned module from the registry. Pre-release in-tree validation: run validate on the root module, not the examples.
 
 ## Code style
 

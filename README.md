@@ -16,7 +16,8 @@ set -a; source .env; set +a
 
 ```hcl
 module "nks" {
-  source = "git::https://github.com/nirvana-labs/terraform-nirvana-nks.git?ref=main"
+  source  = "nirvana-labs/nks/nirvana"
+  version = "~> 0.2.0"
 
   cluster_name       = "basic-demo"
   kubernetes_version = "v1.34.4"
@@ -32,7 +33,7 @@ module "nks" {
 }
 ```
 
-> **Tip:** The examples above reference `?ref=main`. For production use, pin to a release tag (e.g. `?ref=v1.0.0`) to avoid unexpected changes.
+> **Tip:** Pre-1.0 minor releases may include breaking changes. The `~> 0.2.0` constraint pins to patch-level updates within `0.2.x`. Bump the constraint explicitly when adopting a new minor version.
 
 > **Note:** Examples use small instance types and `node_count = 1` so they fit within trial-account resource quotas. NKS autoscaling is on by default and will scale pools up as workloads demand capacity. Use larger `instance_type`s and higher initial `node_count`s for production sizing.
 
@@ -73,7 +74,8 @@ By default the module creates a new VPC. To use an existing VPC, set `create_vpc
 
 ```hcl
 module "nks" {
-  source = "git::https://github.com/nirvana-labs/terraform-nirvana-nks.git?ref=main"
+  source  = "nirvana-labs/nks/nirvana"
+  version = "~> 0.2.0"
 
   cluster_name       = "existing-vpc-demo"
   kubernetes_version = "v1.34.4"
@@ -98,7 +100,8 @@ Define heterogeneous worker pools by adding entries to the `node_pools` map:
 
 ```hcl
 module "nks" {
-  source = "git::https://github.com/nirvana-labs/terraform-nirvana-nks.git?ref=main"
+  source  = "nirvana-labs/nks/nirvana"
+  version = "~> 0.2.0"
 
   cluster_name       = "multi-pool-demo"
   kubernetes_version = "v1.34.4"
@@ -129,7 +132,8 @@ Use the `node-pool` submodule to manage pools in a separate Terraform configurat
 
 ```hcl
 module "gpu_pool" {
-  source = "git::https://github.com/nirvana-labs/terraform-nirvana-nks.git//modules/node-pool?ref=main"
+  source  = "nirvana-labs/nks/nirvana//modules/node-pool"
+  version = "~> 0.2.0"
 
   cluster_id    = module.nks.cluster_id
   name          = "gpu"
