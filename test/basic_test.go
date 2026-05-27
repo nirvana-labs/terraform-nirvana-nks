@@ -21,8 +21,8 @@ import (
 
 const (
 	// Single source of truth for the K8s version under test. Passed to
-	// examples/basic via opts.Vars and used to derive the expected kubelet
-	// prefix in the version assertion below — so the test and example
+	// fixtures/basic via opts.Vars and used to derive the expected kubelet
+	// prefix in the version assertion below — so the test and fixture
 	// can't drift.
 	testK8sVersion = "v1.34.4"
 
@@ -48,9 +48,12 @@ const (
 	smokePodTimeout = "60"
 )
 
-// TestBasicCluster provisions examples/basic, fetches the kubeconfig,
-// and asserts the cluster is reachable, nodes are Ready at the expected
-// Kubernetes version, and a smoke pod schedules and runs.
+// TestBasicCluster provisions fixtures/basic (a local-source mirror of
+// examples/basic), fetches the kubeconfig, and asserts the cluster is
+// reachable, nodes are Ready at the expected Kubernetes version, and a
+// smoke pod schedules and runs. The fixture is local-source so the test
+// exercises in-tree module code on pre-release branches; examples/basic
+// pins the registry version for consumers.
 func TestBasicCluster(t *testing.T) {
 	// Env vars are the same as a manual `terraform apply` — see .env.example.
 	// TF_VAR_project_id is inherited by the terraform subprocess; we only
@@ -59,7 +62,7 @@ func TestBasicCluster(t *testing.T) {
 	require.NotEmpty(t, os.Getenv("TF_VAR_project_id"), "TF_VAR_project_id must be set (see .env.example)")
 
 	opts := &terraform.Options{
-		TerraformDir: "../examples/basic",
+		TerraformDir: "fixtures/basic",
 		Vars: map[string]interface{}{
 			"kubernetes_version": testK8sVersion,
 		},
