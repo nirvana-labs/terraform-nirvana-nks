@@ -23,9 +23,11 @@ A full run: provisions the cluster (~3–5 min), waits ~10 min for the control p
 
 ## Scenarios
 
-- `basic_test.go` — provisions [`examples/basic`](../examples/basic), asserts ≥ 2 nodes Ready, kubelet at the configured Kubernetes minor version, and a busybox pod scheduling and reaching `Running`.
+- `basic_test.go` — provisions [`fixtures/basic`](fixtures/basic) (a local-source mirror of [`examples/basic`](../examples/basic)), asserts ≥ 1 node Ready, kubelet at the configured Kubernetes minor version, and a busybox pod scheduling and reaching `Running`.
 
-Additional scenarios (multi-pool, labeled-pools, existing-vpc) will follow the same pattern: one `Test*` function per example, with `defer terraform.Destroy` guaranteeing teardown even if assertions fail.
+Fixtures under [`fixtures/`](fixtures) use `source = "../../../"` (local) so terratest exercises the in-tree module on pre-release branches. The customer-facing [`examples/`](../examples) directory pins the registry version (`source = "nirvana-labs/nks/nirvana"`) — don't point terratest at it, or you'll only ever test the already-published code.
+
+Additional scenarios (multi-pool, labeled-pools, existing-vpc) will follow the same pattern: a `fixtures/<name>/` directory and one `Test*` function per fixture, with `defer terraform.Destroy` guaranteeing teardown even if assertions fail.
 
 ## Cost and cleanup
 
