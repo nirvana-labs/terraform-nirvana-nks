@@ -43,6 +43,7 @@ resource "nirvana_nks_node_pool" "workers" {
       type = each.value.boot_volume_type
     }
     labels = [for k, v in each.value.labels : "${k}=${v}"]
+    taints = [for t in each.value.taints : t.value == null ? "${t.key}:${t.effect}" : "${t.key}=${t.value}:${t.effect}"]
   }
 
   tags = concat(var.tags, each.value.tags)

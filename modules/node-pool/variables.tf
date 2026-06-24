@@ -56,6 +56,21 @@ variable "labels" {
   }
 }
 
+variable "taints" {
+  description = "Kubernetes taints to apply to each node in the pool. effect must be one of NoSchedule, PreferNoSchedule, NoExecute. Taints are immutable after pool creation."
+  type = list(object({
+    key    = string
+    value  = optional(string)
+    effect = string
+  }))
+  default = []
+
+  validation {
+    condition     = alltrue([for t in var.taints : contains(["NoSchedule", "PreferNoSchedule", "NoExecute"], t.effect)])
+    error_message = "Each taint effect must be one of: NoSchedule, PreferNoSchedule, NoExecute."
+  }
+}
+
 variable "tags" {
   description = "Tags to attach to the node pool."
   type        = list(string)

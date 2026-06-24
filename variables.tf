@@ -47,7 +47,12 @@ variable "node_pools" {
     boot_volume_size = optional(number, 64)
     boot_volume_type = optional(string, "abs")
     labels           = optional(map(string), {})
-    tags             = optional(list(string), [])
+    taints = optional(list(object({
+      key    = string
+      value  = optional(string)
+      effect = string
+    })), [])
+    tags = optional(list(string), [])
   }))
 
   validation {
@@ -68,6 +73,11 @@ variable "node_pools" {
   validation {
     condition     = alltrue([for k, v in var.node_pools : alltrue([for lk in keys(v.labels) : !can(regex("^(kubernetes\\.io|k8s\\.io|nirvanalabs\\.io)(/|$)", lk))])])
     error_message = "Label keys under the kubernetes.io, k8s.io, and nirvanalabs.io prefixes are reserved by the platform."
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.node_pools : alltrue([for t in v.taints : contains(["NoSchedule", "PreferNoSchedule", "NoExecute"], t.effect)])])
+    error_message = "Each node pool taint effect must be one of: NoSchedule, PreferNoSchedule, NoExecute."
   }
 }
 

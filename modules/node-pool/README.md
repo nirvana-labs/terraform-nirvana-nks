@@ -21,12 +21,12 @@ module "gpu_pool" {
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
-| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.47 |
+| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.52.2 |
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | >= 1.47 |
+| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | >= 1.52.2 |
 ## Resources
 
 | Name | Type |
@@ -44,6 +44,7 @@ module "gpu_pool" {
 | <a name="input_name"></a> [name](#input\_name) | Name of the node pool. | `string` | n/a | yes |
 | <a name="input_node_count"></a> [node\_count](#input\_node\_count) | Number of nodes in the pool (1-100). | `number` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to attach to the node pool. | `list(string)` | `[]` | no |
+| <a name="input_taints"></a> [taints](#input\_taints) | Kubernetes taints to apply to each node in the pool. effect must be one of NoSchedule, PreferNoSchedule, NoExecute. Taints are immutable after pool creation. | <pre>list(object({<br/>    key    = string<br/>    value  = optional(string)<br/>    effect = string<br/>  }))</pre> | `[]` | no |
 ## Outputs
 
 | Name | Description |
