@@ -13,8 +13,8 @@ content: |-
 
     cluster_id    = "cluster-id"
     name          = "gpu"
-    node_count    = 2
-    instance_type = "n1-standard-16"
+    node_count    = 1
+    instance_type = "n1-standard-2"
   }
   ```
 
