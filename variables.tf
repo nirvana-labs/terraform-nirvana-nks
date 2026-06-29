@@ -61,6 +61,11 @@ variable "node_pools" {
   }
 
   validation {
+    condition     = alltrue([for k, v in var.node_pools : v.node_count >= 0 && v.node_count <= 100])
+    error_message = "node_count must be between 0 and 100 (0 = scale-from-zero pool)."
+  }
+
+  validation {
     condition     = alltrue([for k, v in var.node_pools : v.boot_volume_size >= 64 && v.boot_volume_size <= 512])
     error_message = "boot_volume_size must be between 64 and 512 GB."
   }
