@@ -220,14 +220,14 @@ Two ways to remove capacity gracefully today:
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.0 |
-| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.50 |
+| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.52.7 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_local"></a> [local](#provider\_local) | 2.9.0 |
-| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | 1.50.0 |
+| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | 1.52.7 |
 
 ## Modules
 
@@ -259,7 +259,7 @@ No modules.
 | <a name="input_kubeconfig_path"></a> [kubeconfig\_path](#input\_kubeconfig\_path) | Path to write the kubeconfig file when fetch\_kubeconfig is true. Defaults to .secrets/kubeconfig-<cluster\_name> relative to the root module. | `string` | `null` | no |
 | <a name="input_kubernetes_version"></a> [kubernetes\_version](#input\_kubernetes\_version) | Kubernetes version for the cluster (e.g. "v1.34.4"). Look up available versions via the nirvana\_nks\_cluster\_kubernetes\_versions data source. Changing this value recreates the cluster — there is no in-place upgrade. | `string` | n/a | yes |
 | <a name="input_management_cidrs"></a> [management\_cidrs](#input\_management\_cidrs) | CIDRs allowed to access the Kubernetes API (443). | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |
-| <a name="input_node_pools"></a> [node\_pools](#input\_node\_pools) | Map of worker node pool definitions. Keys are pool names. | <pre>map(object({<br/>    node_count       = number<br/>    instance_type    = string<br/>    boot_volume_size = optional(number, 64)<br/>    boot_volume_type = optional(string, "abs")<br/>    labels           = optional(map(string), {})<br/>    tags             = optional(list(string), [])<br/>  }))</pre> | n/a | yes |
+| <a name="input_node_pools"></a> [node\_pools](#input\_node\_pools) | Map of worker node pool definitions. Keys are pool names. | <pre>map(object({<br/>    node_count       = number<br/>    instance_type    = string<br/>    boot_volume_size = optional(number, 64)<br/>    boot_volume_type = optional(string, "abs")<br/>    labels           = optional(map(string), {})<br/>    taints = optional(list(object({<br/>      key    = string<br/>      value  = optional(string)<br/>      effect = string<br/>    })), [])<br/>    tags = optional(list(string), [])<br/>  }))</pre> | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | Nirvana Labs project ID. | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | Nirvana Labs region to deploy in. | `string` | `"us-sva-2"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to attach to all resources. | `list(string)` | `[]` | no |
@@ -277,7 +277,7 @@ No modules.
 | <a name="output_cluster_status"></a> [cluster\_status](#output\_cluster\_status) | Status of the cluster. |
 | <a name="output_ingress_vip"></a> [ingress\_vip](#output\_ingress\_vip) | Private IP of the shared ingress. |
 | <a name="output_kubeconfig"></a> [kubeconfig](#output\_kubeconfig) | Kubeconfig for the cluster. Null unless fetch\_kubeconfig is true. |
-| <a name="output_kubeconfig_path"></a> [kubeconfig\_path](#output\_kubeconfig\_path) | Path to the written kubeconfig file. Null unless fetch\_kubeconfig is true. |
+| <a name="output_kubeconfig_path"></a> [kubeconfig\_path](#output\_kubeconfig\_path) | Absolute path to the written kubeconfig file. Null unless fetch\_kubeconfig is true. |
 | <a name="output_node_pool_ids"></a> [node\_pool\_ids](#output\_node\_pool\_ids) | Map of worker node pool names to their IDs. |
 | <a name="output_subnet_cidr"></a> [subnet\_cidr](#output\_subnet\_cidr) | CIDR of the VPC subnet. |
 | <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | ID of the VPC (created or existing). |

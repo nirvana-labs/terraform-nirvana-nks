@@ -10,6 +10,7 @@ resource "nirvana_nks_node_pool" "this" {
       type = var.boot_volume_type
     }
     labels = [for k, v in var.labels : "${k}=${v}"]
+    taints = [for t in var.taints : t.value == null ? "${t.key}:${t.effect}" : "${t.key}=${t.value}:${t.effect}"]
   }
 
   tags = var.tags

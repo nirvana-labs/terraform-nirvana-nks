@@ -9,12 +9,12 @@ variable "name" {
 }
 
 variable "node_count" {
-  description = "Number of nodes in the pool (1-100)."
+  description = "Number of nodes in the pool (0-100). Set to 0 for a scale-from-zero pool that the autoscaler grows on demand."
   type        = number
 
   validation {
-    condition     = var.node_count >= 1 && var.node_count <= 100
-    error_message = "node_count must be between 1 and 100."
+    condition     = var.node_count >= 0 && var.node_count <= 100
+    error_message = "node_count must be between 0 and 100."
   }
 }
 
@@ -53,6 +53,21 @@ variable "labels" {
   validation {
     condition     = alltrue([for lk in keys(var.labels) : !can(regex("^(kubernetes\\.io|k8s\\.io|nirvanalabs\\.io)(/|$)", lk))])
     error_message = "Label keys under the kubernetes.io, k8s.io, and nirvanalabs.io prefixes are reserved by the platform."
+  }
+}
+
+variable "taints" {
+  description = "Kubernetes taints to apply to each node in the pool. effect must be one of NoSchedule, PreferNoSchedule, NoExecute. Taints are immutable after pool creation."
+  type = list(object({
+    key    = string
+    value  = optional(string)
+    effect = string
+  }))
+  default = []
+
+  validation {
+    condition     = alltrue([for t in var.taints : contains(["NoSchedule", "PreferNoSchedule", "NoExecute"], t.effect)])
+    error_message = "Each taint effect must be one of: NoSchedule, PreferNoSchedule, NoExecute."
   }
 }
 
