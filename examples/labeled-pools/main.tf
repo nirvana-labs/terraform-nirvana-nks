@@ -1,6 +1,6 @@
 module "nks" {
   source  = "nirvana-labs/nks/nirvana"
-  version = "~> 0.2.0"
+  version = "~> 0.3.0"
 
   cluster_name       = "labeled-pools-demo"
   kubernetes_version = "v1.34.4"
@@ -16,7 +16,9 @@ module "nks" {
         workload = "general"
       }
     }
-    # Second pool with different sizing and labels, targetable via nodeSelector / nodeAffinity.
+    # Second pool dedicated to premium workloads: labeled so they target it via
+    # nodeSelector / nodeAffinity, and tainted so nothing else schedules here.
+    # Matching pods need both the nodeSelector and a toleration for the taint.
     # In production this would typically be a memory- or compute-optimized instance type.
     premium = {
       node_count       = 1
@@ -26,6 +28,9 @@ module "nks" {
         workload = "premium"
         tier     = "premium"
       }
+      taints = [
+        { key = "tier", value = "premium", effect = "NoSchedule" },
+      ]
     }
   }
 

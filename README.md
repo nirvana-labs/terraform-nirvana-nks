@@ -17,7 +17,7 @@ set -a; source .env; set +a
 ```hcl
 module "nks" {
   source  = "nirvana-labs/nks/nirvana"
-  version = "~> 0.2.0"
+  version = "~> 0.3.0"
 
   cluster_name       = "basic-demo"
   kubernetes_version = "v1.34.4"
@@ -33,7 +33,7 @@ module "nks" {
 }
 ```
 
-> **Tip:** Pre-1.0 minor releases may include breaking changes. The `~> 0.2.0` constraint pins to patch-level updates within `0.2.x`. Bump the constraint explicitly when adopting a new minor version.
+> **Tip:** Pre-1.0 minor releases may include breaking changes. The `~> 0.3.0` constraint pins to patch-level updates within `0.3.x`. Bump the constraint explicitly when adopting a new minor version.
 
 > **Note:** Examples use small instance types and `node_count = 1` so they fit within trial-account resource quotas. NKS autoscaling is on by default and will scale pools up as workloads demand capacity. Use larger `instance_type`s and higher initial `node_count`s for production sizing.
 
@@ -75,7 +75,7 @@ By default the module creates a new VPC. To use an existing VPC, set `create_vpc
 ```hcl
 module "nks" {
   source  = "nirvana-labs/nks/nirvana"
-  version = "~> 0.2.0"
+  version = "~> 0.3.0"
 
   cluster_name       = "existing-vpc-demo"
   kubernetes_version = "v1.34.4"
@@ -101,7 +101,7 @@ Define heterogeneous worker pools by adding entries to the `node_pools` map:
 ```hcl
 module "nks" {
   source  = "nirvana-labs/nks/nirvana"
-  version = "~> 0.2.0"
+  version = "~> 0.3.0"
 
   cluster_name       = "multi-pool-demo"
   kubernetes_version = "v1.34.4"
@@ -126,6 +126,31 @@ module "nks" {
 
 Pools can be added, removed, or resized independently — the module uses `for_each` so changes to one pool do not affect others.
 
+## Node pool taints
+
+Taint a pool so only workloads that tolerate it schedule there (e.g. a dedicated GPU or burst pool). Each taint is an object with `key`, optional `value`, and `effect` (`NoSchedule`, `PreferNoSchedule`, or `NoExecute`). Taints are applied at pool creation and are immutable — changing them replaces the pool.
+
+```hcl
+module "nks" {
+  source  = "nirvana-labs/nks/nirvana"
+  version = "~> 0.3.0"
+
+  cluster_name       = "tainted-pools-demo"
+  kubernetes_version = "v1.34.4"
+  project_id         = var.project_id
+
+  node_pools = {
+    gpu = {
+      node_count    = 1
+      instance_type = "n1-standard-2"
+      taints = [
+        { key = "dedicated", value = "gpu", effect = "NoSchedule" },
+      ]
+    }
+  }
+}
+```
+
 ## Adding a node pool to an existing cluster
 
 Use the `node-pool` submodule to manage pools in a separate Terraform configuration:
@@ -133,7 +158,7 @@ Use the `node-pool` submodule to manage pools in a separate Terraform configurat
 ```hcl
 module "gpu_pool" {
   source  = "nirvana-labs/nks/nirvana//modules/node-pool"
-  version = "~> 0.2.0"
+  version = "~> 0.3.0"
 
   cluster_id    = module.nks.cluster_id
   name          = "gpu"
@@ -190,6 +215,28 @@ When opted out, pools are fixed-size. Increasing `node_count` and re-applying is
 
 > **Upgrading from earlier module versions:** the `autoscaling` variable is new. Module versions before this one didn't pass the field to the cluster resource, so existing clusters will see it explicitly set to `true` on the next `terraform apply` unless you override. If a cluster has been running with fixed-size pools and you want to keep it that way, set `autoscaling = false` before applying.
 
+## Scale to zero
+
+A pool can start empty with `node_count = 0` and be grown on demand by the autoscaler — useful for burst or specialized capacity you don't want running idle. Pair it with a taint so only the intended workloads land there.
+
+```hcl
+node_pools = {
+  base = {
+    node_count    = 1   # baseline: keeps a worker for the cluster + CoreDNS
+    instance_type = "n1-highcpu-2"
+  }
+  burst = {
+    node_count    = 0   # empty until a tolerating pod is pending
+    instance_type = "n1-standard-2"
+    taints        = [{ key = "dedicated", value = "burst", effect = "NoSchedule" }]
+  }
+}
+```
+
+> **Note:** the cluster still needs at least one worker to provision (and to host CoreDNS), so keep a baseline pool at `node_count >= 1` — don't set every pool to zero. Scaling the entire worker layer to zero is a platform/runtime behavior, not a Terraform-declared count.
+
+See the [scale-to-zero example](https://github.com/nirvana-labs/terraform-nirvana-nks/tree/main/examples/scale-to-zero).
+
 ## Scaling node pools
 
 Growing a pool by increasing `node_count` is graceful in both modes — the platform allocates new workers and they join the cluster.
@@ -210,8 +257,9 @@ Two ways to remove capacity gracefully today:
 
 - [Basic](https://github.com/nirvana-labs/terraform-nirvana-nks/tree/main/examples/basic) — Minimal cluster with a single worker pool
 - [Multiple pools](https://github.com/nirvana-labs/terraform-nirvana-nks/tree/main/examples/multi-pool) — Heterogeneous worker pools with restricted management CIDRs
-- [Labeled pools](https://github.com/nirvana-labs/terraform-nirvana-nks/tree/main/examples/labeled-pools) — Node pools with Kubernetes labels for nodeSelector / nodeAffinity targeting
+- [Labeled pools](https://github.com/nirvana-labs/terraform-nirvana-nks/tree/main/examples/labeled-pools) — Node pools with labels and taints for nodeSelector / nodeAffinity targeting and dedicating a pool to specific workloads
 - [Existing VPC](https://github.com/nirvana-labs/terraform-nirvana-nks/tree/main/examples/existing-vpc) — Cluster in a pre-existing VPC
+- [Scale to zero](https://github.com/nirvana-labs/terraform-nirvana-nks/tree/main/examples/scale-to-zero) — Baseline pool plus a tainted pool that scales from zero on demand
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
