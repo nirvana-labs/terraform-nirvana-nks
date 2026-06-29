@@ -9,12 +9,12 @@ variable "name" {
 }
 
 variable "node_count" {
-  description = "Number of nodes in the pool (1-100)."
+  description = "Number of nodes in the pool (0-100). Set to 0 for a scale-from-zero pool that the autoscaler grows on demand."
   type        = number
 
   validation {
-    condition     = var.node_count >= 1 && var.node_count <= 100
-    error_message = "node_count must be between 1 and 100."
+    condition     = var.node_count >= 0 && var.node_count <= 100
+    error_message = "node_count must be between 0 and 100."
   }
 }
 

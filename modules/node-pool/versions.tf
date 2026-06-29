@@ -4,7 +4,7 @@ terraform {
   required_providers {
     nirvana = {
       source  = "nirvana-labs/nirvana"
-      version = ">= 1.52.2"
+      version = ">= 1.52.7"
     }
   }
 }

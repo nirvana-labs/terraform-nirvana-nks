@@ -220,14 +220,14 @@ Two ways to remove capacity gracefully today:
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.0 |
-| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.52.2 |
+| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.52.7 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_local"></a> [local](#provider\_local) | 2.9.0 |
-| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | 1.52.6 |
+| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | 1.52.7 |
 
 ## Modules
 

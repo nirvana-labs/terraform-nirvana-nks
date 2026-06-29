@@ -21,12 +21,12 @@ module "gpu_pool" {
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
-| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.52.2 |
+| <a name="requirement_nirvana"></a> [nirvana](#requirement\_nirvana) | >= 1.52.7 |
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | >= 1.52.2 |
+| <a name="provider_nirvana"></a> [nirvana](#provider\_nirvana) | >= 1.52.7 |
 ## Resources
 
 | Name | Type |
@@ -42,7 +42,7 @@ module "gpu_pool" {
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Instance type for the nodes (e.g. n1-standard-8). | `string` | n/a | yes |
 | <a name="input_labels"></a> [labels](#input\_labels) | Kubernetes labels to apply to each node in the pool. Keys under the kubernetes.io, k8s.io, and nirvanalabs.io prefixes are reserved by the platform. | `map(string)` | `{}` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the node pool. | `string` | n/a | yes |
-| <a name="input_node_count"></a> [node\_count](#input\_node\_count) | Number of nodes in the pool (1-100). | `number` | n/a | yes |
+| <a name="input_node_count"></a> [node\_count](#input\_node\_count) | Number of nodes in the pool (0-100). Set to 0 for a scale-from-zero pool that the autoscaler grows on demand. | `number` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to attach to the node pool. | `list(string)` | `[]` | no |
 | <a name="input_taints"></a> [taints](#input\_taints) | Kubernetes taints to apply to each node in the pool. effect must be one of NoSchedule, PreferNoSchedule, NoExecute. Taints are immutable after pool creation. | <pre>list(object({<br/>    key    = string<br/>    value  = optional(string)<br/>    effect = string<br/>  }))</pre> | `[]` | no |
 ## Outputs
