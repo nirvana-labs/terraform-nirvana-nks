@@ -7,7 +7,7 @@ resource "nirvana_networking_vpc" "this" {
 
 module "nks" {
   source  = "nirvana-labs/nks/nirvana"
-  version = "~> 0.2.0"
+  version = "~> 0.3.0"
 
   cluster_name       = "existing-vpc-demo"
   kubernetes_version = "v1.34.4"
